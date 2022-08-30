@@ -3,9 +3,15 @@ name: Go
 on:
   workflow_dispatch:
   push:
-    branches: [ $default-branch ]
+    branches: 
+    - $default-branch
+    - develop
+    - "feature/**"
+    
   pull_request:
-    branches: [ $default-branch ]
+    branches:
+    - $default-branch
+    - develop
 
 jobs:
 
@@ -23,4 +29,6 @@ jobs:
       run: go build -v ./...
 
     - name: Test
-      run: go test -v ./...
+      run: |
+        go mod tidy
+        go test -v ./...
