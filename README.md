@@ -19,6 +19,7 @@ listen: ":3000"
 secret: "my$ecret"
 hooks:
 - event: "event:key"
+  async: false
   command: /bin/bash
   args:
   - "-c"
