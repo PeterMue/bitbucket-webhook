@@ -28,10 +28,37 @@ jobs:
     - name: Build
       run: go build -v ./...
       
-    - name: Ls
-      run: ls -laR
-
     - name: Test
       run: |
         go mod tidy
         go test -v ./...
+
+    - name: Build Artifacts (linux/amd64)
+      env:
+        GOOS: linux
+        GOARCH: amd64
+      run: go build -o "dist/bitbucket-webhook-$GOOS-$GOARCH" .        
+
+    - name: Build Artifacts (darwin/amd64)
+      env:
+        GOOS: darwin
+        GOARCH: amd64
+      run: go build -o "dist/bitbucket-webhook-$GOOS-$GOARCH" .  
+
+    - name: Build Artifacts (darwin/amd64)
+      env:
+        GOOS: darwin
+        GOARCH: arm64
+      run: go build -o "dist/bitbucket-webhook-$GOOS-$GOARCH" .  
+      
+    - name: Build Artifacts (windows/amd64)
+      env:
+        GOOS: windows
+        GOARCH: amd64
+      run: go build -o "dist/bitbucket-webhook-$GOOS-$GOARCH" .  
+      
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: binaries
+        path: dist/*
