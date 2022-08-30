@@ -1,0 +1,9 @@
+listen: ":3000"
+secret: "secret"
+hooks:
+- event: "diagnostics:ping"
+  command: bash -c 'echo "pong"'
+- event: "pr:merged"
+  command: /bin/bash -c
+  args:
+  - echo "pr merged!"
