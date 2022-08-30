@@ -27,6 +27,9 @@ jobs:
 
     - name: Build
       run: go build -v ./...
+      
+    - name: Ls
+      run: ls -laR
 
     - name: Test
       run: |
