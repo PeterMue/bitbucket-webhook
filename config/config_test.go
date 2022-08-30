@@ -15,22 +15,24 @@ func TestParseConfig(t *testing.T) {
 			Listen: ":3000",
 			Secret: "config-secret",
 			Hooks: []struct {
-				EventType string "yaml:\"event\""
-				Command   string "yaml:\"command\""
-				Args []string "yaml:\"args\""
+				EventType string   `yaml:"event"`
+				Command   string   `yaml:"command"`
+				Args      []string `yaml:"args"`
+				Async     bool     `yaml:"async"`
 			}{
-				{"dummy:event", "bash", nil},
+				{"dummy:event", "bash", nil, false},
 			},
 		}},
 		{[]string{"program", "-config", "config_test.yaml", "-listen", ":1337", "-secret", "flag-secret"}, &Config{
 			Listen: ":1337",
 			Secret: "flag-secret",
 			Hooks: []struct {
-				EventType string "yaml:\"event\""
-				Command   string "yaml:\"command\""
-				Args []string "yaml:\"args\""
+				EventType string   `yaml:"event"`
+				Command   string   `yaml:"command"`
+				Args      []string `yaml:"args"`
+				Async     bool     `yaml:"async"`
 			}{
-				{"dummy:event", "bash", nil},
+				{"dummy:event", "bash", nil, false},
 			},
 		}},
 	}

@@ -12,35 +12,36 @@ import (
 type Config struct {
 	Secret string `yaml:"secret"`
 	Listen string `yaml:"listen"`
-	Hooks []struct {
-		EventType string `yaml:"event"`
-		Command string `yaml:"command"`
-		Args []string `yaml:"args"`
+	Hooks  []struct {
+		EventType string   `yaml:"event"`
+		Command   string   `yaml:"command"`
+		Args      []string `yaml:"args"`
+		Async     bool     `yaml:"async"`
 	} `yaml:"hooks"`
 }
 
 func NewConfig(configPath string) (*Config, error) {
-    config := &Config{}
+	config := &Config{}
 
-    file, err := os.Open(configPath)
-    if err != nil {
-        return nil, err
-    }
-    defer file.Close()
+	file, err := os.Open(configPath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
 
-    if err := yaml.NewDecoder(file).Decode(&config); err != nil {
-        return nil, err
-    }
+	if err := yaml.NewDecoder(file).Decode(&config); err != nil {
+		return nil, err
+	}
 
-    return config, nil
+	return config, nil
 }
 
 func ParseFlags(args []string) (*Config, error) {
 	flags := flag.NewFlagSet(args[0], flag.ContinueOnError)
-	
+
 	// Define flags for command line or environment
 	var (
-		file = flags.String("config", "config.yaml", "Path to config file")
+		file   = flags.String("config", "config.yaml", "Path to config file")
 		listen = flags.String("listen", "", "Server listening address")
 		secret = flags.String("secret", "", "Webhook secret to verify signature")
 	)
@@ -79,7 +80,7 @@ func ParseFlags(args []string) (*Config, error) {
 
 func validateConfig(config *Config) error {
 	missing := func(name string) error {
-		return fmt.Errorf("Missing configuration property: %s", name)	
+		return fmt.Errorf("Missing configuration property: %s", name)
 	}
 	if config.Listen == "" {
 		return missing("listen")
@@ -109,5 +110,5 @@ func validateFile(path string) error {
 	if info.IsDir() {
 		return fmt.Errorf("Config file '%s' is a directory.", path)
 	}
-	return nil;
+	return nil
 }

@@ -16,7 +16,7 @@ func ping(c *fiber.Ctx) error {
 }
 
 func main() {
-	config, err := config.ParseFlags(os.Args);
+	config, err := config.ParseFlags(os.Args)
 	if err != nil {
 		log.Fatalf("Invalid config: %s", err)
 	}
@@ -24,7 +24,7 @@ func main() {
 	// Load configured event handler
 	handlers := make(map[string]handler.Handler)
 	for _, hook := range config.Hooks {
-		handlers[hook.EventType] = *handler.New(hook.EventType, hook.Command, hook.Args)
+		handlers[hook.EventType] = *handler.New(hook.EventType, hook.Command, hook.Args, hook.Async)
 	}
 
 	app := fiber.New()
@@ -47,7 +47,7 @@ func main() {
 		if !ok {
 			return fiber.NewError(fiber.StatusNotFound, "No handler for given eventType configured")
 		}
-		
+
 		// load body and run handler
 		payload := c.Body()
 		if err := handler.Run(h, payload); err != nil {

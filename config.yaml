@@ -1,9 +1,9 @@
 listen: ":3000"
 secret: "secret"
 hooks:
-- event: "diagnostics:ping"
-  command: bash -c 'echo "pong"'
 - event: "pr:merged"
-  command: /bin/bash -c
+  async: false
+  command: /bin/bash
   args:
-  - echo "pr merged!"
+  - "-c"
+  - echo "PR merged by {{ .actor.name }}!"
