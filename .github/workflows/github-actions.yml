@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
   push:
     branches: 
-    - $default-branch
+    - main
     - develop
     - "feature/**"
     
   pull_request:
     branches:
-    - $default-branch
+    - main
     - develop
 
 jobs:
