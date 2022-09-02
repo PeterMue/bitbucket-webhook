@@ -6,12 +6,15 @@ on:
     branches: 
     - main
     - develop
-    - "feature/**"
+    paths:
+    - '**.go'
+    - '**.mod'
+    - '**.sum'
+    - '**/*_test.*'
     
   pull_request:
     branches:
-    - main
-    - develop
+    - "feature/**"
 
 jobs:
 
