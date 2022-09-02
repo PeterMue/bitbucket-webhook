@@ -52,19 +52,19 @@ func (h *Handler) run(headers *header.Headers, message []byte) error {
 	}
 
 	cmd := exec.Command(h.command, args...)
-
-	out, err := cmd.Output()
-	if err != nil {
-		log.Printf("Failed[event=%s, requestId=%s, err=%s, output=%s]", headers.EventKey, headers.RequestId, err, out)
+	
+	if out, err := cmd.Output(); err != nil {
+		log.Printf("Error[requestId=%s, event=%s, err=%s, output=%s]", headers.EventKey, headers.RequestId, err, out)
+	} else {
+		log.Printf("Done[requestId=%s, event=%s, output=%s]", headers.EventKey, headers.RequestId, out)
 	}
-	log.Printf("Finished[event=%s, requestId=%s, output=%s]", headers.EventKey, headers.RequestId, out)
 
 	return nil
 }
 
 func (h *Handler) Run(headers *header.Headers, message []byte) error {
 	if h.asnyc {
-		log.Printf("Accepted[event=%s, requestId=%s]", headers.EventKey, headers.RequestId)
+		log.Printf("Accepted[requestId=%s, event=%s]", headers.EventKey, headers.RequestId)
 		go func() {
 			h.run(headers, message)
 		}()

@@ -1,23 +1,36 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
 	"flag"
 
-	"gopkg.in/yaml.v2"
+	"github.com/PeterMue/bitbucket-webhook/handler"
+	"gopkg.in/yaml.v3"
 )
 
+type Hooks struct {
+	EventKey string   `yaml:"event"`
+	Command  string   `yaml:"command"`
+	Args     []string `yaml:"args"`
+	Async    bool     `yaml:"async"`
+}
+
 type Config struct {
-	Secret string `yaml:"secret"`
-	Listen string `yaml:"listen"`
-	Hooks  []struct {
-		EventType string   `yaml:"event"`
-		Command   string   `yaml:"command"`
-		Args      []string `yaml:"args"`
-		Async     bool     `yaml:"async"`
-	} `yaml:"hooks"`
+	Secret string  `yaml:"secret"`
+	Listen string  `yaml:"listen"`
+	Hooks  []Hooks `yaml:"hooks"`
+}
+
+func (cfg Config) Handler(eventKey string) (*handler.Handler, error) {
+	for _, hook := range cfg.Hooks {
+		if hook.EventKey == eventKey {
+			return handler.New(hook.EventKey, hook.Command, hook.Args, hook.Async), nil
+		}
+	}
+	return nil, errors.New("no handler found")
 }
 
 func NewConfig(configPath string) (*Config, error) {
@@ -95,7 +108,7 @@ func validateConfig(config *Config) error {
 		if hook.Command == "" {
 			return missing(fmt.Sprintf("hooks[%d].command", i))
 		}
-		if hook.EventType == "" {
+		if hook.EventKey == "" {
 			return missing(fmt.Sprintf("hooks[%d].event", i))
 		}
 	}
