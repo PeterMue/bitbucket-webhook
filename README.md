@@ -9,7 +9,7 @@ Simple webhook listener for Bitbucket webhooks that executes configurable shell 
     bitbucket-webhook [-config "<config-file>"] [-listen "<[host]:port>"]] [-secret "<secret>"]
 ```
 
-Note: Command line arguments take higher precedance over configuration file options.
+> **Note**: Command line arguments take higher precedance over configuration file options.
 
 
 # Configuration File
@@ -41,3 +41,19 @@ hooks:
 ```
 
 See [Bitbucket: Event Payload](https://confluence.atlassian.com/bitbucketserver/event-payload-938025882.html) for more Details.
+
+# Example Webhook Requests
+
+> **Note:** The body is just a minimalistic - but correct - subset of the actual bitbucket `pr:merged` webhook payload.
+
+```bash
+BODY='{ "actor" : { "name" : "Peter Müller" }}' 
+SIG="$(echo -n $BODY | openssl dgst -sha256 -hmac secret)" 
+curl -XPOST -H "X-Request-Id: $(uuidgen)" -H "X-Event-Key: pr:merged" -H "X-Hub-Signature: $SIG" -v --data "$BODY" http://localhost:3000/webhook
+```
+
+*or as one-liner*
+
+```bash
+BODY='{ "actor" : { "name" : "Peter Müller" }}' SIG="$(echo -n $BODY | openssl dgst -sha256 -hmac secret)" bash -c 'curl -XPOST -H "X-Request-Id: $(uuidgen)" -H "X-Event-Key: pr:merged" -H "X-Hub-Signature: $SIG" -v --data "$BODY" http://localhost:3000/webhook'
+```

@@ -8,9 +8,6 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/utils"
 )
 
 type Signature string
@@ -44,7 +41,7 @@ func (s Signature) Hash() (crypto.Hash, error) {
 	case "SHA512":
 		return crypto.SHA512, nil
 	}
-	return DefaultHash, fmt.Errorf("Hash not supported")
+	return DefaultHash, fmt.Errorf("hash not supported")
 }
 
 func (s Signature) Digest() string {
@@ -71,25 +68,34 @@ func (s Signature) Validate(message []byte, secret string) (valid bool, err erro
 		return
 	}
 	valid = false
-	err = errors.New("Signature mismatch")
+	err = errors.New("signature invalid")
 	return
 }
 
-func (h *Headers) parse(ctx *fiber.Ctx) {
+func (h *Headers) parse(header map[string][]string) {
 	t := reflect.TypeOf(h).Elem()
 	v := reflect.ValueOf(h).Elem()
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
-		if name, ok := f.Tag.Lookup("http"); ok {
-			if tf := v.FieldByName(f.Name); tf.IsValid() && tf.CanSet() {
-				tf.SetString(utils.ImmutableString(ctx.Get(name)))
-			}
+		// get header key from field tag
+		name, ok := f.Tag.Lookup("http")
+		if !ok {
+			continue
+		}
+		// get header entries
+		values, ok := header[name]
+		if !ok || len(values) == 0 {
+			continue
+		}
+		// set value
+		if tf := v.FieldByName(f.Name); tf.IsValid() && tf.CanSet() {
+			tf.SetString(values[0])
 		}
 	}
 }
 
-func New(ctx *fiber.Ctx) *Headers {
+func New(header map[string][]string) *Headers {
 	h := &Headers{}
-	h.parse(ctx)
+	h.parse(header)
 	return h
 }
