@@ -44,7 +44,7 @@ See [Bitbucket: Event Payload](https://confluence.atlassian.com/bitbucketserver/
 
 # Example Webhook Requests
 
-> **Note:** The body is just a minimalistic - but correct - subset of the actual bitbucket `pr:merged` webhook payload.
+> **Note**: The body is just a minimalistic - but correct - subset of the actual bitbucket `pr:merged` webhook payload.
 
 ```bash
 BODY='{ "actor" : { "name" : "Peter Müller" }}' 
