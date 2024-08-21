@@ -1,9 +1,15 @@
 listen: ":3000"
 secret: "secret"
 hooks:
-- event: "pr:merged"
-  async: false
-  command: /bin/bash
-  args:
-  - "-c"
-  - echo "PR merged by {{ .actor.name }}!"
+  - event: "pr:merged"
+    async: false
+    command: /bin/bash
+    args:
+      - "-c"
+      - echo "PR merged by {{ .actor.name }}!"
+  - event: "pr:merged"
+    async: true
+    command: /bin/bash
+    args:
+      - "-c"
+      - sleep 2 && echo "PR merged by {{ .actor.name }} (asnyc hook)!"

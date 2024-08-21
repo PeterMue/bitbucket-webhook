@@ -24,13 +24,16 @@ type Config struct {
 	Hooks  []Hooks `yaml:"hooks"`
 }
 
-func (cfg Config) Handler(eventKey string) (*handler.Handler, error) {
+func (cfg Config) Handler(eventKey string) (ret []*handler.Handler, err error) {
 	for _, hook := range cfg.Hooks {
 		if hook.EventKey == eventKey {
-			return handler.New(hook.EventKey, hook.Command, hook.Args, hook.Async), nil
+			ret = append(ret, handler.New(hook.EventKey, hook.Command, hook.Args, hook.Async))
 		}
 	}
-	return nil, errors.New("no handler found")
+	if len(ret) == 0 {
+		return nil, errors.New("no handler found")
+	}
+	return ret, nil
 }
 
 func NewConfig(configPath string) (*Config, error) {

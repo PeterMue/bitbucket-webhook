@@ -25,6 +25,14 @@ func TestParseConfig(t *testing.T) {
 				{"dummy:event", "bash", nil, false},
 			},
 		}},
+		{[]string{"program", "-config", "config_test_2.yaml", "-listen", ":1337", "-secret", "flag-secret"}, &Config{
+			Listen: ":1337",
+			Secret: "flag-secret",
+			Hooks: []Hooks{
+				{"dummy:event", "bash", nil, false},
+				{"dummy:event", "sh", nil, false},
+			},
+		}},
 	}
 
 	for _, c := range cases {
