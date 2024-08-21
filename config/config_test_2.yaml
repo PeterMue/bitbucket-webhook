@@ -1,0 +1,7 @@
+listen: ":3000"
+secret: "config-secret"
+hooks: 
+  - event: "dummy:event"
+    command: bash
+  - event: "dummy:event"
+    command: sh
