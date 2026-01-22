@@ -55,5 +55,5 @@ curl -XPOST -H "X-Request-Id: $(uuidgen)" -H "X-Event-Key: pr:merged" -H "X-Hub-
 *or as one-liner*
 
 ```bash
-BODY='{ "actor" : { "name" : "Peter Müller" }}' SIG="$(echo -n $BODY | openssl dgst -sha256 -hmac secret)" bash -c 'curl -XPOST -H "X-Request-Id: $(uuidgen)" -H "X-Event-Key: pr:merged" -H "X-Hub-Signature: $SIG" -v --data "$BODY" http://localhost:3000/webhook'
+BODY='{ "actor" : { "name" : "Peter Müller" }}' SIG="$(echo -n $BODY | openssl dgst -sha256 -hmac secret -binary | xxd -p -c 256)" bash -c 'curl -XPOST -H "X-Request-Id: $(uuidgen)" -H "X-Event-Key: pr:merged" -H "X-Hub-Signature: $SIG" -v --data "$BODY" http://localhost:3000/webhook'
 ```
