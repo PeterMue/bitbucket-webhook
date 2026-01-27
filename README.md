@@ -11,6 +11,23 @@ Simple webhook listener for Bitbucket webhooks that executes configurable shell 
 
 > **Note**: Command line arguments take higher precedance over configuration file options.
 
+## Docker
+
+```sh
+docker run -it --volume ./config.yaml:/config.yaml -p 3000:3000 ghcr.io/petermue/bitbucket-webhook:latest -config /config.yaml -secret "your-secret"
+```
+
+Or using environment variables with a configuration file:
+
+```sh
+docker run -it \
+  --volume ./config.yaml:/config.yaml \
+  -p 3000:3000 \
+  ghcr.io/petermue/bitbucket-webhook:latest
+```
+
+The image is available on [GitHub Container Registry (GHCR)](https://github.com/PeterMue/bitbucket-webhook/pkgs/container/bitbucket-webhook).
+
 
 # Configuration File
 
@@ -47,13 +64,14 @@ See [Bitbucket: Event Payload](https://confluence.atlassian.com/bitbucketserver/
 > **Note**: The body is just a minimalistic - but correct - subset of the actual bitbucket `pr:merged` webhook payload.
 
 ```bash
+SECRET='secret'
 BODY='{ "actor" : { "name" : "Peter Müller" }}' 
-SIG="$(echo -n $BODY | openssl dgst -sha256 -hmac secret)" 
+SIG="$(echo -n $BODY | openssl dgst -sha256 -hmac $SECRET -binary | xxd -p -c 256)" 
 curl -XPOST -H "X-Request-Id: $(uuidgen)" -H "X-Event-Key: pr:merged" -H "X-Hub-Signature: $SIG" -v --data "$BODY" http://localhost:3000/webhook
 ```
 
 *or as one-liner*
 
 ```bash
-BODY='{ "actor" : { "name" : "Peter Müller" }}' SIG="$(echo -n $BODY | openssl dgst -sha256 -hmac secret -binary | xxd -p -c 256)" bash -c 'curl -XPOST -H "X-Request-Id: $(uuidgen)" -H "X-Event-Key: pr:merged" -H "X-Hub-Signature: $SIG" -v --data "$BODY" http://localhost:3000/webhook'
+SECRET='secret' BODY='{ "actor" : { "name" : "Peter Müller" }}' SIG="$(echo -n $BODY | openssl dgst -sha256 -hmac $SECRET -binary | xxd -p -c 256)" bash -c 'curl -XPOST -H "X-Request-Id: $(uuidgen)" -H "X-Event-Key: pr:merged" -H "X-Hub-Signature: $SIG" -v --data "$BODY" http://localhost:3000/webhook'
 ```
