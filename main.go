@@ -53,7 +53,7 @@ func dispatchEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Go, find event handler
-	handler, err := cfg.Handler(h.EventKey)
+	handlers, err := cfg.Handler(h.EventKey)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("No handler for given event key configured"))
@@ -61,9 +61,16 @@ func dispatchEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// load body and run handler
-	if err := handler.Run(h, body); err != nil {
+	failed := 0
+	for _, handler := range handlers {
+		if err := handler.Run(h, body); err != nil {
+			failed++
+		}
+	}
+
+	if failed > 0 {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Failed to complete webhook"))
+		w.Write([]byte(fmt.Sprintf("Failed to complete webhooks (%d of %d failed)", failed, len(handlers))))
 		return
 	}
 
