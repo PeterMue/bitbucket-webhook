@@ -37,7 +37,7 @@ secret: "my$ecret"
 hooks:
 - event: "event:key"
   async: false
-  command: /bin/bash
+  command: /bin/sh
   args:
   - "-c"
   - echo "Hello World"
@@ -51,7 +51,7 @@ The `args` support go template syntax and were populated with the entire Webhook
 ```yaml
 hooks:
 - event: "pr:merged"
-  command: /bin/bash
+  command: /bin/sh
   args:
   - "-c"
   - echo "There's a merged PR from {{ .author.name }}"
@@ -63,7 +63,7 @@ See [Bitbucket: Event Payload](https://confluence.atlassian.com/bitbucketserver/
 
 > **Note**: The body is just a minimalistic - but correct - subset of the actual bitbucket `pr:merged` webhook payload.
 
-```bash
+```sh
 SECRET='secret'
 BODY='{ "actor" : { "name" : "Peter Müller" }}' 
 SIG="$(echo -n $BODY | openssl dgst -sha256 -hmac $SECRET -binary | xxd -p -c 256)" 
@@ -72,6 +72,6 @@ curl -XPOST -H "X-Request-Id: $(uuidgen)" -H "X-Event-Key: pr:merged" -H "X-Hub-
 
 *or as one-liner*
 
-```bash
-SECRET='secret' BODY='{ "actor" : { "name" : "Peter Müller" }}' SIG="$(echo -n $BODY | openssl dgst -sha256 -hmac $SECRET -binary | xxd -p -c 256)" bash -c 'curl -XPOST -H "X-Request-Id: $(uuidgen)" -H "X-Event-Key: pr:merged" -H "X-Hub-Signature: $SIG" -v --data "$BODY" http://localhost:3000/webhook'
+```sh
+SECRET='secret' BODY='{ "actor" : { "name" : "Peter Müller" }}' SIG="$(echo -n $BODY | openssl dgst -sha256 -hmac $SECRET -binary | xxd -p -c 256)" sh -c 'curl -XPOST -H "X-Request-Id: $(uuidgen)" -H "X-Event-Key: pr:merged" -H "X-Hub-Signature: $SIG" -v --data "$BODY" http://localhost:3000/webhook'
 ```
